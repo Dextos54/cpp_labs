@@ -11,17 +11,23 @@ int fib(int n) {
 }
  
 int max_fib(int n){
-    if (n == 0){
-        return 0;
-    }
-    if (n == 1){
-        return 0;
-    }
-    for (int i = 0; i < n; i++){
-        if ((fib(i) <= n) && fib(i + 1) >= n){
-            return fib(i);
+    int fib[] = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269};
+    for (int i = 0; i < 33; i++){
+        if (fib[i]<= n && fib[i + 1] >= n){
+            return fib[i];
         }
     }
+    return 0;
+}
+
+int max_fib_another (int n){
+    int max_fib1 = 1346269;
+    int max_fib2 = 832040;
+    while (n - 1 < max_fib1){
+        max_fib1 = max_fib1 - max_fib2;
+        std::swap(max_fib1, max_fib2);
+    }
+    return max_fib1;
 }
 
 
@@ -57,7 +63,7 @@ void shell_sort_one(int array[], int size){
 }
 
 void shell_sort_three(int array[], int size){
-    for (int interval = max_fib(size); interval > 0; interval = max_fib(interval)){
+    for (int interval = max_fib_another(size); interval > 0; interval = max_fib_another(interval)){
         for (int i = interval; i < size; i++){
             int key = array[i];
             int j = i - interval;
@@ -91,14 +97,12 @@ void shell_sort_two(int array[], int size){
 
 
 int main(){
-    //int array[] = {1, 3, 3, 11, 21, 1, 45, 7, 6, 4};
-    //shell_sort_two(array, 10);
-    //for (int i = 0; i < 10; i++){
-    //    std::cout << array[i] << " ";
-    //}
-    //std::cout << std::endl;
-
-
+    int array[] = {1, 3, 3, 11, 21, 1, 45, 7, 6, 4};
+    shell_sort_three(array, 10);
+    for (int i = 0; i < 10; i++){
+        std::cout << array[i] << " ";
+    }
+    std::cout << std::endl;
     unsigned seed = 1538;
     std::default_random_engine rng(seed);
     int m;
