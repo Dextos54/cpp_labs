@@ -5,14 +5,13 @@
 #include <vector>
 
 
-// ===== Базовый интерфейс =====
 class RandomVariable {
 public:
     virtual unsigned roll() = 0;
     virtual ~RandomVariable() = default;
 };
 
-// ===== Dice =====
+
 class Dice : public RandomVariable {
 public:
     Dice(unsigned max, unsigned seed)
@@ -28,7 +27,7 @@ private:
     std::default_random_engine reng;
 };
 
-// ===== ThreeDicePool =====
+
 class ThreeDicePool : public RandomVariable {
 public:
     ThreeDicePool(RandomVariable &d1, RandomVariable &d2, RandomVariable &d3)
@@ -42,7 +41,7 @@ private:
     RandomVariable &d1, &d2, &d3;
 };
 
-// ===== универсальное матожидание =====
+
 double expected_value(RandomVariable &rv, unsigned number_of_rolls = 1) {
     unsigned long long accum = 0;
     for (unsigned cnt = 0; cnt < number_of_rolls; ++cnt)
@@ -50,7 +49,7 @@ double expected_value(RandomVariable &rv, unsigned number_of_rolls = 1) {
     return static_cast<double>(accum) / static_cast<double>(number_of_rolls);
 }
 
-// ===== PenaltyDice =====
+
 class PenaltyDice : public RandomVariable {
 public:
     PenaltyDice(RandomVariable &base) : base(base) {}
@@ -63,7 +62,7 @@ private:
     RandomVariable &base;
 };
 
-// ===== BonusDice =====
+
 class BonusDice : public RandomVariable {
 public:
     BonusDice(RandomVariable &base) : base(base) {}
@@ -76,7 +75,7 @@ private:
     RandomVariable &base;
 };
 
-// ===== вероятность выпадения конкретного значения =====
+
 double value_probability(unsigned value, RandomVariable &rv, unsigned number_of_rolls = 1) {
     unsigned count = 0;
     for (unsigned i = 0; i < number_of_rolls; ++i) {
@@ -85,7 +84,7 @@ double value_probability(unsigned value, RandomVariable &rv, unsigned number_of_
     return static_cast<double>(count) / number_of_rolls;
 }
 
-// ===== DoubleDice (множественное наследование) =====
+
 class DoubleDice_Multi : public PenaltyDice, public BonusDice {
 public:
     DoubleDice_Multi(RandomVariable &base)
@@ -100,7 +99,7 @@ private:
     RandomVariable &base;
 };
 
-// ===== DoubleDice (композиция) =====
+
 class DoubleDice_Compose : public RandomVariable {
 public:
     DoubleDice_Compose(RandomVariable &base)
@@ -152,9 +151,9 @@ void build_histogram(RandomVariable& r, const std::string& filename,
 
 
 
-// ===== main =====
+
 int main() {
-    // --- Задание 1 ---
+
     Dice d(6, 40);
     std::cout << "E[Dice] ~ " << expected_value(d, 1000000) << "\n";
 
@@ -162,7 +161,7 @@ int main() {
     ThreeDicePool pool(d1, d2, d3);
     std::cout << "E[ThreeDicePool] ~ " << expected_value(pool, 1000000) << "\n\n";
 
-    // --- Задание 2 ---
+
     Dice d100(100, 123);
 
     PenaltyDice pd(d100);
@@ -172,7 +171,7 @@ int main() {
     std::cout << "P(X=50) Penalty ≈ " << value_probability(50, pd, 1000000) << "\n";
     std::cout << "P(X=50) Bonus ≈ " << value_probability(50, bd, 1000000) << "\n\n";
 
-    // --- Задание 3 ---
+
     DoubleDice_Multi ddm(d100);
     DoubleDice_Compose ddc(d100);
 
@@ -181,7 +180,7 @@ int main() {
 
     std::random_device rd;
     
-    // Для Dice [1,100]
+
     PenaltyDice penaltyD100(d100);
     BonusDice bonusD100(d100);
     
@@ -189,7 +188,7 @@ int main() {
     build_histogram(penaltyD100, "data/penalty_dice_1_100.csv", 1, 100);
     build_histogram(bonusD100, "data/bonus_dice_1_100.csv", 1, 100);
     
-    // Для ThreeDicePool [3,18]
+
     ThreeDicePool threeD6(d1, d2, d3);
     PenaltyDice penaltyThreeD6(threeD6);
     BonusDice bonusThreeD6(threeD6);
